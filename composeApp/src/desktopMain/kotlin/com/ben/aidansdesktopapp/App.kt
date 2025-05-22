@@ -56,7 +56,7 @@ fun App() {
                 modifier = Modifier
                     .safeContentPadding()
                     .fillMaxSize()
-                    .background(Color.LightGray),
+                    .background(Color.DarkGray),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
@@ -69,6 +69,7 @@ fun App() {
                     verticalArrangement = Arrangement.Top
                 ) {
                     Text(text = "Left Column ")
+
                     SNP500Box(
                         modifier = Modifier
                             .padding(16.dp),

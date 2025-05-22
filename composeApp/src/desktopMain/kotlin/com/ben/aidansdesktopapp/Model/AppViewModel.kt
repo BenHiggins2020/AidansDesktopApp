@@ -2,9 +2,6 @@ package com.ben.aidansdesktopapp.Model
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ben.aidansdesktopapp.Adapter.ExcelSheetAdapter
-import com.ben.aidansdesktopapp.Adapter.HistoricalAndSharpeDataAdapter
-import com.ben.aidansdesktopapp.Adapter.MarketDataHandler
 import com.ben.aidansdesktopapp.Repository.HistoricalData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
