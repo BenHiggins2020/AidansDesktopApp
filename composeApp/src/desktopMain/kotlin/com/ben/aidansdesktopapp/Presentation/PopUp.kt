@@ -30,20 +30,28 @@ import kotlin.concurrent.schedule
 
 class PopUp {
 
-    lateinit var popUpTrigger: MutableTransitionState<Boolean>
-    lateinit var popUpText: MutableStateFlow<String>
+    companion object {
+        lateinit var popUpTrigger: MutableTransitionState<Boolean>
+        lateinit var popUpText: MutableStateFlow<String>
+        const val SHORT = 3000L
+    }
+    var duration = SHORT
 
     class PopUpBuilder {
         val popUp = PopUp()
 
         fun withTransitionState(transitionState: MutableTransitionState<Boolean>): PopUpBuilder {
-            popUp.popUpTrigger = transitionState
+            popUpTrigger = transitionState
             return this
         }
 
         fun withText(text: MutableStateFlow<String>): PopUpBuilder {
-            popUp.popUpText = text
+            popUpText = text
             return this
+        }
+
+        fun withDuration(duration: Long){
+            popUp.duration = duration
         }
 
         fun build(): PopUp {
@@ -57,7 +65,7 @@ class PopUp {
 
         LaunchedEffect(popUpTrigger.targetState) {
             if (popUpTrigger.targetState) {
-                Timer().schedule(SHORT) {
+                Timer().schedule(duration) {
                     popUpTrigger.targetState = !popUpTrigger.targetState
                 }
             }
@@ -65,32 +73,24 @@ class PopUp {
         AnimatedVisibility(
             visibleState = popUpTrigger,
             enter = slideInVertically(),
-            exit = slideOutVertically()
+            exit = slideOutVertically(),
+            modifier = Modifier.fillMaxWidth()
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth(.3f)
                     .fillMaxHeight(.1f)
+                    .background(Color.Black)
                     .border(border = BorderStroke(4.dp, Color.Black), shape = CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = popUpText.value,
+                    color = Color.White
                 )
             }
         }
 
-    }
-
-    companion object {
-        val SHORT = 3000L
-        val LONG = 5000L
-
-        fun startTimer(time: Long) = runBlocking {
-            launch {
-                delay(time)
-            }
-        }
     }
 }
 

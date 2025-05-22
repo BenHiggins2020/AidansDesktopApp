@@ -52,69 +52,72 @@ fun App() {
 
     MaterialTheme {
         Scaffold {
-            Row( // Master Row
-                modifier = Modifier
-                    .safeContentPadding()
-                    .fillMaxSize()
-                    .background(Color.DarkGray),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxHeight()
-                        .background(Color.Green),
-                    horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.Top
-                ) {
-                    Text(text = "Left Column ")
 
-                    SNP500Box(
-                        modifier = Modifier
-                            .padding(16.dp),
-                        dataSource = viewModel
-                    )
-
-                }
-                Column(
+                Row( // Master Row
                     modifier = Modifier
-                        .weight(1f)
-                        .fillMaxHeight()
                         .safeContentPadding()
-                        .background(Color.Yellow),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
+                        .fillMaxSize()
+                        .background(Color.DarkGray),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-
-                    Text("Hello Aidan!")
-
-                    Text("Middle Column")
-
-                    Button(
-                        onClick = {
-                            viewModel.collectSnP500Flow()
-                        }
+                    Column(
+                        modifier = Modifier
+                            .weight(1.25f)
+                            .fillMaxHeight()
+                            .background(Color.Green),
+                        horizontalAlignment = Alignment.Start,
+                        verticalArrangement = Arrangement.Top
                     ) {
-                        Text("Get SnP 500 tickers!")
+
+                        SNP500Box(
+                            modifier = Modifier
+                                .padding(16.dp),
+                            dataSource = viewModel
+                        )
+
+                    }
+
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                            .safeContentPadding()
+                            .background(Color.Yellow),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+
+                        Text("Hello Aidan!")
+
+                        Button(
+                            onClick = {
+                                viewModel.collectSnP500Flow()
+                            }
+                        ) {
+                            Text("Get SnP 500 tickers!")
+                        }
+
+                    }
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                            .safeContentPadding()
+                            .background(Color.Red),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+
+                        Text("Right Column")
+
                     }
 
                 }
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxHeight()
-                        .safeContentPadding()
-                        .background(Color.Red),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-
-                    Text("Right Column")
-
-                }
                 popUp.show()
-            }
+
+
+
         }
 
     }

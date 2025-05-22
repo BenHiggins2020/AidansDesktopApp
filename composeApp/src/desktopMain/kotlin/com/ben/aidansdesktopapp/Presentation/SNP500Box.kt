@@ -59,7 +59,7 @@ fun SNP500Box(modifier: Modifier = Modifier, dataSource: AppViewModel) {
             var text by remember { mutableStateOf("") }
 
             TextField(
-                modifier = Modifier.background(Color.White).weight(1f),
+                modifier = Modifier.background(Color.White).weight(.75f).padding(top = 4.dp),
                 value = text,
                 onValueChange = { text = it },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
@@ -73,6 +73,9 @@ fun SNP500Box(modifier: Modifier = Modifier, dataSource: AppViewModel) {
                                 listState.animateScrollToItem(index)
                             }
 
+                        } else  {
+                            PopUp.popUpText.value = "Symbol not found."
+                            PopUp.popUpTrigger.targetState = true
                         }
                     }
                 ),
