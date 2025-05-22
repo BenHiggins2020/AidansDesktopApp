@@ -1,6 +1,7 @@
 package com.ben.aidansdesktopapp.Presentation
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -11,9 +12,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,11 +27,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.ben.aidansdesktopapp.Model.AppViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
-import java.util.Locale
 
 
 @Composable
@@ -42,7 +37,7 @@ fun SNP500Box(modifier: Modifier = Modifier, dataSource: AppViewModel) {
 
     Card(
         modifier = modifier
-            .background(Color.Transparent, shape = CircleShape)
+            .background(Color.Red, shape = CircleShape)
             .safeContentPadding()
     ) {
         Row(
@@ -51,7 +46,7 @@ fun SNP500Box(modifier: Modifier = Modifier, dataSource: AppViewModel) {
             horizontalArrangement = Arrangement.Center
         ) {
             Text(
-                modifier = Modifier.padding(8.dp).weight(1f).background(Color.Yellow),
+                modifier = Modifier.align(alignment = Alignment.CenterVertically).padding(start = 8.dp).weight(1f).background(Color.Transparent),
                 text = "S&P 500 Stocks:",
                 textDecoration = TextDecoration.Underline,
             )
@@ -59,7 +54,16 @@ fun SNP500Box(modifier: Modifier = Modifier, dataSource: AppViewModel) {
             var text by remember { mutableStateOf("") }
 
             TextField(
-                modifier = Modifier.background(Color.White).weight(.75f).padding(top = 4.dp),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    cursorColor = Color.Black, // Adjust cursor color as needed
+                    focusedTextColor = Color.Black, // Ensures text is readable
+                    unfocusedTextColor = Color.Black
+                ),
+                modifier = Modifier.background(Color.Transparent).weight(.75f).padding(top = 4.dp).border(width = 1.dp, color = Color.Black,shape = CircleShape),
                 value = text,
                 onValueChange = { text = it },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
@@ -79,6 +83,7 @@ fun SNP500Box(modifier: Modifier = Modifier, dataSource: AppViewModel) {
                         }
                     }
                 ),
+                placeholder = {Text("Search")},
                 readOnly = false,
                 singleLine = true,
                 maxLines = 1,
