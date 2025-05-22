@@ -85,7 +85,7 @@ class WebService {
                     println("Empty row")
                     return@forEach
                 }
-
+                println("${cells[0].text()}")
                 symbols.add(cells[0].text())
             }
 
@@ -93,7 +93,6 @@ class WebService {
             e.printStackTrace()
         }
 
-        symbols = symbols.subList(0, 499)
         return symbols.toList()
     }
 
