@@ -43,7 +43,6 @@ class WebService {
                 val cells = it.select("td")
 
                 if (cells.isEmpty()) {
-                    println("Empty row")
                     return@forEach
                 }
 
@@ -85,7 +84,6 @@ class WebService {
                     println("Empty row")
                     return@forEach
                 }
-                println("${cells[0].text()}")
                 symbols.add(cells[0].text())
             }
 
@@ -132,11 +130,7 @@ class WebService {
         rows.forEach {
             val cells = it.select("td")
 
-            println("Cells: ${cells.size}")
-            println("Cells: ${cells.text()}")
-
             if (cells.isEmpty() || cells.size < 7) {
-                println("Empty row")
                 return@forEach
             }
             val data = HistoricalDataRow(
