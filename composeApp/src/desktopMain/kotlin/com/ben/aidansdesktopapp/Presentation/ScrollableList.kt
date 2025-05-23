@@ -2,6 +2,7 @@ package com.ben.aidansdesktopapp.Presentation
 
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
@@ -28,15 +28,17 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun ScrollableList(
     dataSource: AppViewModel,
-    modifier: Modifier = Modifier,
-    listState:LazyListState
+    listState: LazyListState
 ) {
 
-//    val listState = rememberLazyListState() // Correct state for LazyColumn
     val items by dataSource.getSymbolListFlow().collectAsState()
 
 
-    Row(modifier = Modifier.fillMaxSize()) {
+    Row(
+        modifier = Modifier
+            .fillMaxSize(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         // Scrollbar properly linked to LazyColumn
         VerticalScrollbar(
             modifier = Modifier.padding(start = 8.dp),
@@ -44,8 +46,7 @@ fun ScrollableList(
         )
 
         LazyColumn(
-            modifier = Modifier
-                .background(Color.Transparent),//.weight(1f),
+            modifier = Modifier,
             state = listState,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -63,19 +64,17 @@ fun ListItem(text: String) {
         modifier = Modifier
             .padding(8.dp)
             .fillMaxSize()
-
+            .border(width = 2.dp, color = Color.Black, shape = CircleShape)
             .background(Color.Transparent, shape = CircleShape),
 
         ) {
         Text(
             text = text,
             modifier = Modifier
-                .background(Color.Yellow)
                 .clickable {
                     println("Clicked on $text")
                 }
                 .fillMaxSize()
-
                 .padding(16.dp)
                 .wrapContentSize(),
             maxLines = 3

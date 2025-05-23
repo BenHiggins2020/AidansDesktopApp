@@ -2,6 +2,7 @@ package com.ben.aidansdesktopapp
 
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,28 +41,31 @@ fun App() {
     MaterialTheme {
         Scaffold {
 
-            Column(Modifier.fillMaxSize()){
+            Column(Modifier.fillMaxSize()) {
                 Row( // Master Row
-                    modifier = Modifier.safeContentPadding().fillMaxWidth().fillMaxHeight(.75f).weight(1f)
-                        .background(Color.DarkGray),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(.75f)
+                        .weight(1f)
+                        .safeContentPadding(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     Column(
-                        modifier = Modifier.weight(1.25f).fillMaxHeight().background(Color.Green),
+                        modifier = Modifier.weight(1.25f).fillMaxHeight()
+                            .padding(4.dp),
                         horizontalAlignment = Alignment.Start,
                         verticalArrangement = Arrangement.Top
                     ) {
 
                         SNP500Box(
-                            modifier = Modifier.padding(16.dp), dataSource = viewModel
+                            dataSource = viewModel
                         )
 
                     }
 
                     Column(
-                        modifier = Modifier.weight(1f).fillMaxHeight().safeContentPadding()
-                            .background(Color.Yellow),
+                        modifier = Modifier.weight(1f).fillMaxHeight().safeContentPadding(),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
@@ -71,12 +75,10 @@ fun App() {
 
                     }
                     Column(
-                        modifier = Modifier.weight(1f).fillMaxHeight().safeContentPadding()
-                            .background(Color.Red),
+                        modifier = Modifier.weight(1f).fillMaxHeight().safeContentPadding(),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-
                         Text("Right Column")
 
                     }
@@ -84,7 +86,8 @@ fun App() {
                 }
 
                 Row(
-                    modifier = Modifier.fillMaxWidth().fillMaxHeight(.25f).background(Color.White).weight(.20f),
+                    modifier = Modifier.fillMaxWidth().fillMaxHeight(.25f).background(Color.White)
+                        .weight(.20f),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
