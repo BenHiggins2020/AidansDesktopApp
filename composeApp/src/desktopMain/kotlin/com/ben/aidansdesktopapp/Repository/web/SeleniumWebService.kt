@@ -124,6 +124,7 @@ class SeleniumWebService {
 }*/
 package com.ben.aidansdesktopapp.Repository.web
 
+import com.ben.aidansdesktopapp.Repository.util.WebUtil
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.openqa.selenium.By
@@ -132,6 +133,7 @@ import org.openqa.selenium.WebDriver
 import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.chrome.ChromeOptions
 import org.openqa.selenium.support.ui.WebDriverWait
+import java.io.File
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -140,146 +142,44 @@ import java.time.Instant
 
 class SeleniumWebService {
 
-    fun api(symbol: String){
 
-        val driver = openYahooFinanceToSymbol(symbol)
+    fun api(symbol: String) {
+
+        val baseUrl = openYahooFinanceToSymbol(symbol)
+        //https://finance.yahoo.com/quote/PODD/history/?frequency=1mo&period1=1592100166&period2=1749866555
+        val historicalDataUrl = baseUrl + "/history?frequency=1mo"+ WebUtil.createUrlPeriod(5)
+        val driver = createChromeDriver()
+//        driver.get("https://finance.yahoo.com/quote/$symbol/history")
+//        driver.navigate().to(historicalDataUrl)
+        driver.get(historicalDataUrl)
         println("Open successful, ")
 
-        driver.navigate().to("https://finance.yahoo.com/quote/$symbol/history")
+//        println("Navigation successful, ")
 
-        println("Navigation successful, ")
-
-        try {
-            val table = driver.findElement(By.tagName("table"))
-            println("Searching elements. ${table}")
-            println("Table details: ${table.size}")
-            val rows = table.findElements(By.tagName("tr"))
-            println("Rows: ${rows.size} ")
-            rows.forEach {
-                println("Row: ${it.text}")
-                it.findElements(By.tagName("td")).forEachIndexed { index, webElement ->
-                    when(index){
-                        0 -> println("Date: ${webElement.text}")
-                        1 -> println("Open: ${webElement.text}")
-                        2 -> println("High: ${webElement.text}")
-                        3 -> println("Low: ${webElement.text}")
-                        4 -> println("Close: ${webElement.text}")
-                        5 -> println("Adj Close: ${webElement.text}")
-                        6 -> println("Volume: ${webElement.text}")
-                    }
-                }
-            }
-//            println("Table text: ${table.text}")
-
-        } catch (e:Exception){
-            println("Failed to search for my elemtn: ${e.stackTraceToString()}")
-            driver.quit()
+        val parser = SeleniumParser(driver)
+        //Parse table exports data at current page
+        parser.parseForTable().forEach {
+            println(it)
         }
+
 
         driver.quit()
 
     }
 
-    fun openBrowser(url:String): WebDriver {
-        val driver = createChromeDriver()
-        driver.get(url)
-        return driver
-    }
-    fun openYahooFinanceToSymbol(symbol:String): WebDriver {
+    private fun openYahooFinanceToSymbol(symbol: String): String {
         val url = "https://finance.yahoo.com/quote/$symbol"
-        return openBrowser(url)
+        return url
     }
 
-    fun extractDataToCSV(ticker: String): String? {
-        val driver = createChromeDriver()
-        return try {
-            val url = "https://finance.yahoo.com/quote/$ticker/history"
-            println("Opening $url")
-            driver.get(url)
-            println("Driver.get(url) called -> PageSource = ${driver.pageSource}")
-            driver.pageSource
-
-            // Wait up to 10 seconds for crumb to appear
-//            val crumb = waitForCrumb(driver) ?: throw RuntimeException("Failed to get crumb.")
-//            val crumb = waitForCrumb2(driver) ?: throw RuntimeException("Failed to get crumb.")
-
-            val crumb = "k7rDWxxoYP0"
-
-            val cookies = driver.manage().cookies
-            val cookieHeader = cookies.joinToString("; ") { "${it.name}=${it.value}" }
-
-            println("Crumb: $crumb")
-            println("Cookies: $cookieHeader")
-
-            // Generate timestamps for period1 and period2
-            val now = Instant.now().epochSecond
-            val oneYearAgo = now - (60L * 60 * 24 * 365)
-
-            val downloadUrl =
-                "https://query1.finance.yahoo.com/v7/finance/download/$ticker?period1=$oneYearAgo&period2=$now&interval=1d&events=history&crumb=$crumb"
-            val downloadUrl2 = "https://query1.finance.yahoo.com/v7/finance/quote?&symbols=${ticker}&fields=currency,fromCurrency,toCurrency,exchangeTimezoneName,exchangeTimezoneShortName,gmtOffSetMilliseconds,regularMarketChange,regularMarketChangePercent,regularMarketPrice,regularMarketTime,preMarketChange,preMarketChangePercent,preMarketPrice,preMarketTime,priceHint,postMarketChange,postMarketChangePercent,postMarketPrice,postMarketTime,extendedMarketChange,extendedMarketChangePercent,extendedMarketPrice,extendedMarketTime,overnightMarketChange,overnightMarketChangePercent,overnightMarketPrice,overnightMarketTime&crumb=${crumb}}&formatted=false&region=US&lang=en-US"
-
-            println("Downloading from: $downloadUrl2")
-
-            fetchCSV(downloadUrl2, cookieHeader)
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        } finally {
-            driver.quit()
-        }
-    }
-
-    private fun waitForCrumb2(driver: WebDriver, timeoutSec: Int = 10): String? {
-        val executor = (driver as JavascriptExecutor)
-        WebDriverWait(driver, Duration.ofSeconds(10)).until {
-            executor.executeScript("return document.readyState") == "complete"
-        }
-        println("WebDriver wait finished, page has loaded")
-        val crumb = executor.executeScript("return window.YAHOO && window.YAHOO.Finance && window.YAHOO.Finance.ContextStore ? window.YAHOO.Finance.ContextStore.crumb : null;")
-
-        return crumb.toString()
-    }
-    private fun waitForCrumb(driver: WebDriver, timeoutSec: Int = 10): String? {
-        val executor = driver as JavascriptExecutor
-        val start = System.currentTimeMillis()
-        while ((System.currentTimeMillis() - start) < timeoutSec * 1000) {
-            try {
-                val crumb = executor.executeScript("return window.YAHOO.Finance.ContextStore.crumb;").also {
-                    println("also ... ${it}")
-                }
-                if (crumb != null && crumb is String) {
-                    return crumb
-                }
-                Thread.sleep(500)
-            } catch (e: Exception) {
-                println("Failed to get crumb. Too bad!! \n ${e.stackTraceToString()}")
-                Thread.sleep(500)
-            }
-        }
-        return null
-    }
-
-    private fun fetchCSV(url: String, cookieHeader: String): String {
-        val client = OkHttpClient()
-        val request = Request.Builder()
-            .url(url)
-            .addHeader("Cookie", cookieHeader)
-            .addHeader("User-Agent", "Mozilla/5.0")
-            .build()
-
-        client.newCall(request).execute().use { response ->
-            if (!response.isSuccessful) throw IOException("Unexpected code ${response.code}")
-            return response.body?.string() ?: throw IOException("Empty body")
-        }
-    }
 
     private fun createChromeDriver(): WebDriver {
-        System.setProperty("webdriver.chrome.driver", "C:\\Tools\\chromedriver\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe")
-        val chromeBinaryPath = "chrome/chrome.exe"
-        val chromeDriverPath = "chrome/chromedriver.exe"
-//        System.setProperty("webdriver.chrome.driver", chromeDriverPath)
+        System.setProperty(
+            "webdriver.chrome.driver",
+            "C:\\Tools\\chromedriver\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe"
+        )
+        val chromeDriverPath = "C:\\Users\\Ben\\AndroidStudioProjects\\AidansDesktopApp\\composeApp\\chrome\\chromedriver.exe"
+        System.setProperty("webdriver.chrome.driver", chromeDriverPath)
         val options = ChromeOptions()
 //        options.setBinary(chromeBinaryPath)
         options.addArguments("--disable-gpu")
@@ -287,5 +187,43 @@ class SeleniumWebService {
         options.addArguments("--no-sandbox")
         options.addArguments("--disable-dev-shm-usage")
         return ChromeDriver(options)
+    }
+
+    private inner class SeleniumParser(
+        private val driver: WebDriver
+    ) {
+        fun parseForTable(): List<String> {
+            return try {
+                val table = driver.findElement(By.tagName("table"))
+                println("Searching elements. ${table}")
+                println("Table details: ${table.size}")
+                val rows = table.findElements(By.tagName("tr"))
+                println("Rows: ${rows.size} ")
+                val adjCloseData = mutableListOf<String>()
+                rows.forEach {
+                    if(it.text.contains("dividend")) return@forEach
+//                    println("Row: ${it.text}")
+                    it.findElements(By.tagName("td")).forEachIndexed { index, webElement ->
+                        when (index) {
+//                            0 -> println("Date: ${webElement.text}")
+//                            1 -> println("Open: ${webElement.text}")
+//                            2 -> println("High: ${webElement.text}")
+//                            3 -> println("Low: ${webElement.text}")
+//                            4 -> println("Close: ${webElement.text}")
+                            5 -> adjCloseData.add(webElement.text)//.also {println("Adj Close: ${webElement.text}")}
+//                            6 -> println("Volume: ${webElement.text}")
+                        }
+                    }
+                }
+
+                return adjCloseData //TODO: Update this.. But we really just want to output the tables??
+                //really just want to calculate all the sharpe data...
+
+            } catch (e: Exception) {
+                println("Failed to search for my element: ${e.stackTraceToString()}")
+                driver.quit()
+                return emptyList()
+            }
+        }
     }
 }
