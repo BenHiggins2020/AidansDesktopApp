@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import com.ben.aidansdesktopapp.Model.AppViewModel
 import com.ben.aidansdesktopapp.Presentation.PopUp
 import com.ben.aidansdesktopapp.Presentation.SNP500Box
+import com.ben.aidansdesktopapp.Presentation.reuseable.Screen
 import kotlinx.coroutines.flow.MutableStateFlow
 
 
@@ -34,20 +35,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 fun Home(
     viewModel: AppViewModel = AppViewModel()
 ) {
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Column(
-            modifier = Modifier.fillMaxSize(.80f)//.background(Color.Red)
-        ) {
-            content(viewModel)
-        }
-    }
-
-
-
+  Screen { content(viewModel) }
 }
 
 @Composable
