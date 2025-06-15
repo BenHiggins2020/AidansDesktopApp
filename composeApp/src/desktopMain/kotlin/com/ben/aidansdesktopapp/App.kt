@@ -87,7 +87,7 @@ fun App() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight(.07f)
-                    .background(Color.LightGray)
+                    .background(Color.LightGray).padding(start = 16.dp)
             ) {
                 IconButton(
                     modifier = Modifier.size(20.dp),
@@ -142,6 +142,8 @@ fun App() {
                                 TextButton(
                                     onClick = {
                                         selectedTab = tab
+                                        navigationPanelTrigger.targetState =
+                                            !navigationPanelTrigger.targetState
                                     },
                                     modifier = Modifier.background(
                                         color = Color.Transparent,

@@ -92,24 +92,23 @@ fun content(viewModel: AppViewModel) {
             verticalArrangement = Arrangement.Center
         ) {
             Text("Right Column")
-            val TAG = "App"
-            var txt by remember { mutableStateOf("") }
+            var ticker by remember { mutableStateOf("") }
             TextField(
-                value = txt,
-                onValueChange = { txt = it },
+                value = ticker,
+                onValueChange = { ticker = it },
                 label = { Text("Enter ticker to get historical data for") },
 
 
                 )
             Button(onClick = {
-                if (!txt.isNullOrEmpty()) {
-                    viewModel.makeSeleniumApiCall(txt)
+                if (!ticker.isNullOrEmpty()) {
+                    viewModel.makeSeleniumApiCall(ticker)
                 } else {
                     PopUp.popUpText.value = "Please enter a ticker!"
                     PopUp.popUpTrigger.targetState = true
                 }
             }) {
-                Text("Search for ticker: $txt")
+                Text("Search for ticker: $ticker")
             }
         }
 
@@ -118,7 +117,6 @@ fun content(viewModel: AppViewModel) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-//            .fillMaxHeight(.25f)
             .background(Color.White)
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,
