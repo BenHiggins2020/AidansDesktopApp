@@ -36,6 +36,15 @@ kotlin {
             implementation("org.seleniumhq.selenium:selenium-java:4.20.0") // this is for the headless browser
             implementation("io.github.bonigarcia:webdrivermanager:5.8.0") // this will automatically download the correct chrome driver.
 
+            implementation("org.jetbrains.compose.material:material-icons-core:1.5.3")
+            implementation("org.jetbrains.compose.material:material-icons-extended:1.5.3")
+
+
+//            implementation(libs.androidx.navigation.compose.jvmstubs)
+//            implementation("androidx.navigation:navigation-compose:2.7.5")
+//                implementation("androidx.compose.material:material-icons-core:1.5.3") // Core icons
+//                implementation("androidx.compose.material:material-icons-extended:1.5.3") // Full set of icons
+//            implementation("androidx.compose.material3:material3:1.2.0")
 
         }
         commonTest.dependencies {
@@ -51,7 +60,6 @@ kotlin {
         }
     }
 }
-
 
 compose.desktop {
     application {

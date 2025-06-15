@@ -1,36 +1,55 @@
 package com.ben.aidansdesktopapp
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.material3.Button
-import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.onClick
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.TextButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.outlined.Menu
+import androidx.compose.material.icons.sharp.Menu
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.ben.aidansdesktopapp.Model.AppViewModel
 import com.ben.aidansdesktopapp.Presentation.PopUp
-import com.ben.aidansdesktopapp.Presentation.SNP500Box
+import com.ben.aidansdesktopapp.Presentation.pages.main.Home
+import com.ben.aidansdesktopapp.Presentation.pages.sharpe.Sharpe
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 @Preview
 fun App() {
@@ -38,124 +57,118 @@ fun App() {
 
     val viewModel = AppViewModel()
 
-    val symbolFlow = viewModel.getSymbolFlow()
-    val progressFlow = viewModel.getProgressFlow()
     val popUpText = MutableStateFlow<String>("Practice")
     val popUpTrigger = MutableTransitionState<Boolean>(false)
-
     val popUp = PopUp.PopUpBuilder().withTransitionState(popUpTrigger).withText(popUpText).build()
 
-    val enableButton by remember { mutableStateOf(symbolFlow.value.isNotEmpty()) }
+    val navigationPanelTrigger = MutableTransitionState<Boolean>(false)
+    /*val navController = rememberNavController()
+    NavHost(navController, startDestination = "home") {
+        composable("home") { Home(navController) }
+        composable("sharpe") { Sharpe(navController) }
+    }*/
+
+    val tabs = listOf("Home", "Sharpe")
+    var selectedTab by mutableStateOf("Home")
+
     MaterialTheme {
+
         Scaffold {
 
-            Column(Modifier.fillMaxSize()) {
-                Row( // Master Row
+            when (selectedTab) {
+                "Home" -> Home(viewModel)
+                "Sharpe" -> Sharpe()
+            }
+
+            //Top Menu Bar
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(.07f)
+                    .background(Color.LightGray)
+            ) {
+                IconButton(
+                    modifier = Modifier.size(20.dp),
+                    onClick = {
+                        navigationPanelTrigger.targetState = !navigationPanelTrigger.targetState
+                    }
+                ) {
+                    Icon(imageVector = Icons.Default.Menu, contentDescription = "Menu")
+                }
+            }
+
+            //Slide Out Navigation Bar
+            AnimatedVisibility(
+                visibleState = navigationPanelTrigger,
+                enter = slideInHorizontally { -it } + fadeIn(),
+                exit = slideOutHorizontally { -it * 2 } + fadeOut()
+            ) {
+
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(.75f)
-                        .weight(1f)
-                        .safeContentPadding(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                        .fillMaxWidth(.25f)
+                        .fillMaxHeight()
+                        .background(Color.LightGray, shape = RoundedCornerShape(8.dp))
                 ) {
-                    Column(
-                        modifier = Modifier.weight(1.25f).fillMaxHeight()
-                            .padding(4.dp),
-                        horizontalAlignment = Alignment.Start,
-                        verticalArrangement = Arrangement.Top
-                    ) {
+                    Column {
 
-                        SNP500Box(
-                            dataSource = viewModel
-                        )
-
-                    }
-
-                    Column(
-                        modifier = Modifier.weight(1f).fillMaxHeight().safeContentPadding(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-
-                        Text("Hello Aidan!")
-
-                        LinearProgressIndicator(
-                            progress = progressFlow.value.toFloat(),
-                            modifier = Modifier.padding(16.dp),
-
-                            )
-
-                        Text("Progress: ${progressFlow.value * 100}%")
-                        Text("Symbol: ${symbolFlow.value}")
-
-
-                    }
-
-                    Column(
-                        modifier = Modifier.weight(1f).fillMaxHeight().safeContentPadding(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text("Right Column")
-                        val TAG = "App"
-                        var txt by remember { mutableStateOf("") }
-                        TextField(
-                            value = txt,
-                            onValueChange = { txt = it },
-                            label = { Text("Enter ticker to get historical data for") },
-
-
-                        )
-                        Button(onClick = {
-                            if(!txt.isNullOrEmpty()){
-                                viewModel.makeSeleniumApiCall(txt)
-                            } else {
-                                PopUp.popUpText.value = "Please enter a ticker!"
-                                PopUp.popUpTrigger.targetState = true
-                            }
-                        }){
-                            Text("Search for ticker: $txt")
-                        }
-                    }
-
-                }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth().fillMaxHeight(.25f).background(Color.White)
-                        .weight(.20f)
-                        .padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    Button(onClick = {
-                        viewModel.collectSnP500Flow()
-                    }) {
-                        Text("Get SnP 500 tickers!")
-                    }
-
-                    Button(
-                        enabled = true,
-                        onClick = {
-                            if (viewModel.getSymbolListFlow().value.isNotEmpty()) {
-                                viewModel.collectHistoricalDataFlow()
-                            } else {
-                                PopUp.popUpText.value = "Please Get SnP 500 tickers first!"
-                                PopUp.popUpTrigger.targetState = true
+                        Row(
+                            modifier = Modifier.fillMaxWidth()
+                                .padding(16.dp), // Remove fillMaxWidth()
+                            horizontalArrangement = Arrangement.Start
+                        ) {
+                            IconButton(
+                                modifier = Modifier.size(20.dp),
+                                onClick = {
+                                    navigationPanelTrigger.targetState =
+                                        !navigationPanelTrigger.targetState
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Menu,
+                                    contentDescription = "Menu"
+                                )
                             }
                         }
-                    ) {
-                        Text("Collect Historical Data")
+
+                        Column(
+                            verticalArrangement = Arrangement.Top,
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.weight(1f).fillMaxWidth()
+                        ) {
+                            tabs.forEach { tab ->
+                                TextButton(
+                                    onClick = {
+                                        selectedTab = tab
+                                    },
+                                    modifier = Modifier.background(
+                                        color = Color.Transparent,
+                                        shape = RoundedCornerShape(8.dp)
+                                    ).fillMaxWidth()
+                                ) {
+                                    Text(
+                                        text = tab,
+                                        textAlign = TextAlign.Center,
+                                    )
+                                }
+                            }
+                        }
+
+
                     }
 
 
                 }
-
             }
         }
 
         popUp.show()
-
     }
 
+
 }
+
+
+
