@@ -6,13 +6,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -27,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.ben.aidansdesktopapp.Model.AppViewModel
 import com.ben.aidansdesktopapp.Presentation.PopUp
 import com.ben.aidansdesktopapp.Presentation.SNP500Box
-import com.ben.aidansdesktopapp.Presentation.reuseable.Screen
+import com.ben.aidansdesktopapp.Presentation.components.Screen
 import kotlinx.coroutines.flow.MutableStateFlow
 
 

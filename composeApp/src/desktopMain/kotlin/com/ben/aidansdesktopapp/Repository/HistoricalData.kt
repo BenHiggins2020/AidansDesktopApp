@@ -33,6 +33,13 @@ fun mutableHistoricalDataRow.toHistoricalDataRow(): HistoricalDataRow {
     )
 }
 
+fun List<HistoricalDataRow>.toHistoricalData(symbol: String): HistoricalData {
+    return HistoricalData(
+        symbol = symbol,
+        rows = this
+    )
+}
+
 
 data class HistoricalData(
     val symbol: String,

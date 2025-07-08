@@ -44,6 +44,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.ben.aidansdesktopapp.Model.AppViewModel
 import com.ben.aidansdesktopapp.Presentation.PopUp
+import com.ben.aidansdesktopapp.Presentation.pages.data.Data
 import com.ben.aidansdesktopapp.Presentation.pages.main.Home
 import com.ben.aidansdesktopapp.Presentation.pages.sharpe.Sharpe
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -68,7 +69,7 @@ fun App() {
         composable("sharpe") { Sharpe(navController) }
     }*/
 
-    val tabs = listOf("Home", "Sharpe")
+    val tabs = listOf("Home", "Sharpe", "Data")
     var selectedTab by mutableStateOf("Home")
 
     MaterialTheme {
@@ -78,6 +79,7 @@ fun App() {
             when (selectedTab) {
                 "Home" -> Home(viewModel)
                 "Sharpe" -> Sharpe()
+                "Data" -> Data(viewModel)
             }
 
             //Top Menu Bar

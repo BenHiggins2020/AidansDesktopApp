@@ -18,21 +18,29 @@ class AppViewModel : ViewModel() {
     private val symbolFlow = mSymbolFlow.asStateFlow()
 
     lateinit var map: Map<String, Double>
+
     val symbolsList = MutableStateFlow<List<String>>(emptyList())
 
-    private val historicalData = mutableMapOf<String, HistoricalData>()
-    private val mHistoricalDataFlow = MutableStateFlow<Map<String, HistoricalData>>(historicalData)
-    private val historicalDataFlow = mHistoricalDataFlow.asStateFlow()
-
+    private val mHistoricalDataFlow = MutableStateFlow<MutableList<HistoricalData>>(mutableListOf())
+    private val mSymbolCollection = MutableStateFlow<MutableList<String>>(emptyList<String>().toMutableList())
     private val dataHandlerModel = DataHandlerModel()
 
 
     fun makeSeleniumApiCall(symbol: String) = viewModelScope.launch {
         println("Making selenium api call. for symbol: $symbol")
-        ApiCallManager().makeLocalSeleniumApiCall(symbol).also {
-            historicalData[symbol] = HistoricalData(symbol,it.second)
-            mHistoricalDataFlow.value = historicalData // if suspend we need to change this to postValue()
-        }
+        val data = ApiCallManager().makeLocalSeleniumApiCall(symbol)
+
+
+        println("Selenium api call complete. Updating Data structures... with ${data.rows.size} ")
+        println("Checking for current data: ${data.rows.size}")
+
+        mHistoricalDataFlow.value.add(data)
+        mSymbolCollection.value.add(data.symbol)
+
+        println("Data structures updated. Checking: (data) ${mHistoricalDataFlow.value.size}")
+        println("Symbol Collection updated. Checking: (data) ${mSymbolCollection.value.size}")
+
+
     }
 
     fun collectSnP500Flow() = viewModelScope.launch(Dispatchers.IO) {
@@ -56,9 +64,13 @@ class AppViewModel : ViewModel() {
     private fun collectHistoricalDataForSymbol(symbol: String) = viewModelScope.launch {
         println("Collecting historical data for $symbol")
         dataHandlerModel.historicalDataExtractorFlow(symbol).collect { data ->
-            historicalData[data.symbol] = data
-            mHistoricalDataFlow.value = historicalData
-            mProgressFlow.emit((historicalData.size / symbolsList.value.size).toFloat())
+            val list = mHistoricalDataFlow.value
+            println("Checking for current data: ${data.rows.size}")
+
+            list.toMutableList().add(data)
+            mHistoricalDataFlow.value = list
+            println("Data structures updated. Checking: (list) ${list.size} (data) ${mHistoricalDataFlow.value.size}")
+            mProgressFlow.emit((list.size / symbolsList.value.size).toFloat())
         }
     }
 
@@ -71,7 +83,8 @@ class AppViewModel : ViewModel() {
     fun getSymbolFlow() = symbolFlow
     fun getProgressFlow() = progressFlow
     fun getSymbolListFlow() = symbolsList.asStateFlow()
-    fun getHistoricalDataFlow() = historicalDataFlow
+    fun getHistoricalDataFlow() = mHistoricalDataFlow.asStateFlow()
+    fun getSymbolCollectionFlow() = mSymbolCollection.asStateFlow()
 }
 
 

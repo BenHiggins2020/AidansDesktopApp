@@ -1,5 +1,6 @@
 package com.ben.aidansdesktopapp.Adapter
 
+import com.ben.aidansdesktopapp.Repository.HistoricalData
 import com.ben.aidansdesktopapp.Repository.HistoricalDataRow
 import com.ben.aidansdesktopapp.Repository.web.SeleniumWebService
 import kotlinx.coroutines.CoroutineScope
@@ -15,7 +16,7 @@ class ApiCallManager(
     private val coroutineContext:CoroutineContext = Dispatchers.IO
 ) {
 
-    suspend fun makeLocalSeleniumApiCall(symbol:String): Pair<List<Float>,List<HistoricalDataRow>> {
+    suspend fun makeLocalSeleniumApiCall(symbol:String): HistoricalData {
         return withContext(coroutineContext){
            return@withContext SeleniumWebService().api(symbol)
         }
