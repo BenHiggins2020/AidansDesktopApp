@@ -34,7 +34,10 @@ import com.ben.aidansdesktopapp.Presentation.CustomStaticScrollableList
 import com.ben.aidansdesktopapp.Presentation.ScrollableList
 import com.ben.aidansdesktopapp.Presentation.components.Screen
 import com.ben.aidansdesktopapp.Presentation.components.ScrollbarList
+import com.ben.aidansdesktopapp.Presentation.components.Table
+import com.ben.aidansdesktopapp.Repository.HistoricalData
 import com.ben.aidansdesktopapp.Repository.HistoricalDataRow
+import com.ben.aidansdesktopapp.Repository.emptyHistoricalData
 
 
 @Composable
@@ -43,13 +46,18 @@ fun Data(viewModel: AppViewModel) {
     var symbolSelectionTrigger = MutableTransitionState<Boolean>(initialState = false)
     val historicalDataList = historicalDataFlow.collectAsState()
     var selectedSymbolLocal by remember { mutableStateOf<String>("Select a Symbol") }
-    var selectedSymbolData by remember { mutableStateOf(listOf<HistoricalDataRow>()) }
+    var selectedSymbolData by remember { mutableStateOf(emptyHistoricalData) }
     try {
-        selectedSymbolData =
-            historicalDataList.value.filter { it.symbol == selectedSymbolLocal }.first().rows
+        if(historicalDataList.value.isEmpty()){
+            println("Historical Data List is empty. Doing nothing... ")
+        } else {
+            selectedSymbolData =
+                historicalDataList.value.first()
+        }
+
     } catch (e: Exception) {
         println("Probably got empty data... we wont do anything right now! ")
-        selectedSymbolData = emptyList()
+        selectedSymbolData = emptyHistoricalData
     }
     Screen {
 
@@ -85,58 +93,63 @@ fun Data(viewModel: AppViewModel) {
 
         if (!symbolSelectionTrigger.targetState) {
             Column(
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(top = 16.dp)
             ) {
                 //TODO: update this with a way to select different tickers.
                 val dataListState = rememberLazyListState()
-                Row(
-                    modifier = Modifier.padding(16.dp).fillMaxWidth().background(Color.LightGray),
-                    horizontalArrangement = Arrangement.Start,
+              /*  Row(
+//                    modifier = Modifier.padding(start = 32.dp, end = 32.dp, top = 16.dp, bottom = 16.dp).fillMaxWidth().background(Color.LightGray),
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
                 ) {
                     Text(
                         "Date ",
                         modifier = Modifier.padding(end = 16.dp)
                     )
-                    Text(
+                    *//*Text(
                         text = "|",
                         modifier = Modifier.padding(end = 16.dp)
-                    )
+                    )*//*
                     Text(
                         text = "Adj. Close",
                         modifier = Modifier.padding(end = 16.dp)
                     )
-                }
+                }*/
 
-                Divider(color = Color.Gray, thickness = 1.dp)
 
-                CustomStaticScrollableList(
+                Table(data = selectedSymbolData)
+
+
+              /*  CustomStaticScrollableList(
                     items = selectedSymbolData,
                     listState = dataListState,
                     listItem = { items ->
                         items as HistoricalDataRow
                         if (!items.date.isNullOrEmpty()) {
                             Row(
-                                modifier = Modifier.padding(16.dp).fillMaxSize()
-                                    .background(Color.Gray),
-                                horizontalArrangement = Arrangement.Start
+//                                modifier = Modifier.padding(16.dp).fillMaxSize()
+//                                    .background(Color.Gray),
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceEvenly,
                             ) {
                                 Text(
                                     text = items.date,
-                                    modifier = Modifier.padding(end = 16.dp)
+//                                    modifier = Modifier.padding(end = 16.dp)
                                 )
-                                Text(
+                               *//* Text(
                                     text = "|",
-                                    modifier = Modifier.padding(end = 16.dp)
-                                )
+//                                    modifier = Modifier.padding(end = 16.dp)
+                                )*//*
                                 Text(
                                     text = items.adjClose,
-                                    modifier = Modifier.padding(end = 16.dp)
+//                                    modifier = Modifier.padding(end = 16.dp)
                                 )
                             }
                         }
 
                     }
-                )
+                )*/
             }
         }
 
@@ -170,7 +183,9 @@ fun Data(viewModel: AppViewModel) {
                     symbolSelectionTrigger.targetState = false
 
                     selectedSymbolLocal = str
+
                     println("selectedSymbolLocal: ${selectedSymbolLocal}")
+                    selectedSymbolData = historicalDataFlow.value.filter { it.symbol == str }.first()
 
                 }
 

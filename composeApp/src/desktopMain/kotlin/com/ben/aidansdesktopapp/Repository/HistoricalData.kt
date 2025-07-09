@@ -45,3 +45,43 @@ data class HistoricalData(
     val symbol: String,
     val rows: List<HistoricalDataRow>,
 )
+
+
+val emptyHistoricalData = HistoricalData(
+    symbol = "",
+    rows = emptyList()
+)
+
+
+data class HistoricalDataTable(
+    val dates: MutableList<String>,
+    val open: MutableList<String>,
+    val high: MutableList<String>,
+    val low: MutableList<String>,
+    val close: MutableList<String>,
+    val adjClose: MutableList<String>,
+    val volume: MutableList<String>
+)
+
+fun HistoricalData.toTable(): HistoricalDataTable {
+    val table = HistoricalDataTable(
+        emptyList<String>().toMutableList(),
+        emptyList<String>().toMutableList(),
+        emptyList<String>().toMutableList(),
+        emptyList<String>().toMutableList(),
+        emptyList<String>().toMutableList(),
+        emptyList<String>().toMutableList(),
+        emptyList<String>().toMutableList()
+    )
+    this.rows.forEach {
+        table.dates.add(it.date)
+        table.open.add(it.open)
+        table.high.add(it.high)
+        table.low.add(it.low)
+        table.close.add(it.close)
+        table.adjClose.add(it.adjClose)
+        table.volume.add(it.volume)
+    }
+    return table
+
+}
