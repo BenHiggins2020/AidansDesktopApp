@@ -1,12 +1,13 @@
 package com.ben.aidansdesktopapp.Repository
 
+import com.ben.aidansdesktopapp.Repository.web.JsoupWebService
 import junit.framework.TestCase.assertTrue
 import org.junit.Before
 import org.junit.Test
 
-class WebServiceTest {
+class JsoupWebServiceTest {
 
-    val testInstance = WebService()
+    val testInstance = JsoupWebService()
 
     private lateinit var wikiList:List<String>
     private lateinit var mostActiveTableMap:Map<String, TableData>
@@ -38,7 +39,7 @@ class WebServiceTest {
     @Test
     fun `test parseHistoricalData returns data`(){
         val symbol = "AAPL"
-        val data = testInstance.parseHistoricalData(symbol)
+        val data = testInstance.parseHistoricalDataAsync(symbol)
         assertTrue(data.isNotEmpty())
     }
 }

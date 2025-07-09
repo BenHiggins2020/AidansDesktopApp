@@ -12,14 +12,25 @@ class DataHandlerModel {
     val historicalDataMap = mutableMapOf<String, HistoricalData>()
 
     fun SnP500ExtracterFlow() = flow<List<String>> {
+        println("SnP500ExtracterFlow called")
         emit(marketDataHandler.getSnP500Symbols())
     }.flowOn(Dispatchers.IO)
 
     fun historicalDataExtractorFlow(symbol: String) = flow<HistoricalData> {
-        emit(marketDataHandler.getHistoricalData(symbol))
+        println("Historical data extractor flow called")
+
+        if (historicalDataMap.containsKey(symbol)) {
+            emit(historicalDataMap[symbol]!!)
+            println("historical data stored, fetching... ${historicalDataMap[symbol]!!}")
+
+        } else {
+            println("No historical data stored, fetching...")
+            emit(marketDataHandler.getHistoricalData(symbol))
+        }
+
     }.flowOn(Dispatchers.IO)
 
-    fun beginCalculationFlow(data:HistoricalData) = flow<Map<String, Double>> {
+    fun beginCalculationFlow(data: HistoricalData) = flow<Map<String, Double>> {
         emit(marketDataHandler.getSharpeRatio(data))
     }.flowOn(Dispatchers.IO)
 

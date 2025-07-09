@@ -7,12 +7,19 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.TextAutoSize
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -50,17 +57,18 @@ fun SNP500Box(modifier: Modifier = Modifier, dataSource: AppViewModel) {
     ) {
         //Title Row
         Row(
-            modifier = Modifier.fillMaxWidth().weight(1f).padding(8.dp),
+            modifier = Modifier.fillMaxWidth().weight(1f).padding(8.dp).wrapContentSize(),
             verticalAlignment = Alignment.CenterVertically, // Ensures both components align properly
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
                 modifier = Modifier
                     .weight(3f) // Ensures title takes most of the space
-                    .padding(8.dp),
+                    .padding(8.dp)
+                    .wrapContentSize(),
                 text = "S&P 500 Stocks:",
                 textDecoration = TextDecoration.Underline,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
             )
 
             var text by remember { mutableStateOf("") }
@@ -103,16 +111,7 @@ fun SNP500Box(modifier: Modifier = Modifier, dataSource: AppViewModel) {
                     }
                 ),
                 placeholder = {
-                    BasicText(
-                        text = "Search",
-                        autoSize = TextAutoSize.StepBased(
-                            minFontSize = 10.sp,
-                            maxFontSize = 20.sp,
-                            stepSize = 1.sp
-                        ),
-                        maxLines = 1,
-                        style = TextStyle(fontSize = 16.sp)
-                    )
+                    Icon(imageVector = Icons.Default.Search, contentDescription = "Search")
                 },
                 readOnly = false,
                 singleLine = true,

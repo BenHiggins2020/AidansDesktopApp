@@ -2,12 +2,15 @@ package com.ben.aidansdesktopapp.Adapter
 
 import com.ben.aidansdesktopapp.Repository.HistoricalData
 import com.ben.aidansdesktopapp.Repository.SharpeCalculator
-import com.ben.aidansdesktopapp.Repository.WebService
+import com.ben.aidansdesktopapp.Repository.web.JsoupWebService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
-
+/*
+*  This class should only only handle csv data and calculate the sharpe ratios.
+*
+* */
 class MarketDataHandler {
     /*
 * Goal: create suspend functions to do the following
@@ -27,20 +30,23 @@ class MarketDataHandler {
     *
     * */
 
-    private val webService = WebService()
+    private val jsoupWebService = JsoupWebService()
     private val sharpeCalculator = SharpeCalculator()
 
     private val mhistoricalDataFlow = MutableStateFlow<Map<String, HistoricalData>>(emptyMap())
     val historicalDataFlow = mhistoricalDataFlow.asStateFlow()
 
+    //TODO: Move to ApiCallManager
     //WebService API Wrapper for getting all tickers.
      suspend fun getSnP500Symbols(): List<String> {
-        return withContext(Dispatchers.IO) { webService.getSnP500Symbols() }
+        return withContext(Dispatchers.IO) { jsoupWebService.getSnP500Symbols() }
     }
 
+    //TODO: Move to ApiCallManager
     //WebService Api Wrapper for pulling historical data for a single ticker
+    @Deprecated("This method does not work on yahoofinance.")
      suspend fun getHistoricalData(symbol: String): HistoricalData {
-        return withContext(Dispatchers.IO) { webService.createHistoricalData(symbol) }
+        return withContext(Dispatchers.IO) { jsoupWebService.createHistoricalDataAsync(symbol) }
     }
 
     private suspend fun calculateSharpeRatio(symbol: String): Map<String, Double> {
@@ -77,6 +83,7 @@ class MarketDataHandler {
         }
     }
 
+    //TODO: Remove this
     //Exposed Api for calling the WebService APIs then passing data into calculator.
     suspend fun runWebServiceAndCalculateSharpeRatios(): Map<String, Double> {
         return withContext(Dispatchers.IO) {
