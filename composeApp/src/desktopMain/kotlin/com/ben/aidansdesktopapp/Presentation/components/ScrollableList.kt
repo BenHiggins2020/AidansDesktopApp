@@ -8,11 +8,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.onClick
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
@@ -35,7 +33,7 @@ fun ScrollableList(
     listState: LazyListState
 ) {
 
-    val items by dataSource.getSymbolListFlow().collectAsState()
+    val items by dataSource.getSnP500SymbolsFlow().collectAsState()
 
 
     Row(

@@ -24,7 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.ben.aidansdesktopapp.Model.AppViewModel
 import com.ben.aidansdesktopapp.Presentation.PopUp
-import com.ben.aidansdesktopapp.Presentation.SNP500Box
+import com.ben.aidansdesktopapp.Presentation.components.SNP500Box
 import com.ben.aidansdesktopapp.Presentation.components.Screen
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -38,7 +38,7 @@ fun Home(
 
 @Composable
 fun content(viewModel: AppViewModel) {
-    val symbolFlow = viewModel.getSymbolFlow()
+    val symbolFlow = viewModel.getCurrentSymbolSearchFlow()
     val progressFlow = viewModel.getProgressFlow()
     val popUpText = MutableStateFlow<String>("Practice")
     val popUpTrigger = MutableTransitionState<Boolean>(false)
@@ -93,16 +93,16 @@ fun content(viewModel: AppViewModel) {
             var ticker by remember { mutableStateOf("") }
             TextField(
                 value = ticker,
-                onValueChange = { ticker = it },
+                onValueChange = { ticker = it.uppercase() },
                 label = { Text("Enter ticker to get historical data for") },
 
 
                 )
             Button(onClick = {
-                if (!ticker.isNullOrEmpty()) {
+                if (!ticker.isNullOrEmpty() && !viewModel.getSnP500SymbolsFlow().value.contains(ticker)) {
                     viewModel.makeSeleniumApiCall(ticker)
                 } else {
-                    PopUp.popUpText.value = "Please enter a ticker!"
+                    PopUp.popUpText.value = "Please enter a ticker! That you haven't already gotten historical data for!"
                     PopUp.popUpTrigger.targetState = true
                 }
             }) {
@@ -129,7 +129,7 @@ fun content(viewModel: AppViewModel) {
         Button(
             enabled = true,
             onClick = {
-                if (viewModel.getSymbolListFlow().value.isNotEmpty()) {
+                if (viewModel.getSnP500SymbolsFlow().value.isNotEmpty()) {
                     viewModel.collectHistoricalDataForSymbol()
                 } else {
                     PopUp.popUpText.value = "Please Get SnP 500 tickers first!"

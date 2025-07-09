@@ -19,7 +19,7 @@ class AppViewModel : ViewModel() {
 
     lateinit var map: Map<String, Double>
 
-    val symbolsList = MutableStateFlow<List<String>>(emptyList())
+    val snp500Symbols = MutableStateFlow<List<String>>(emptyList())
 
     private val mHistoricalDataFlow = MutableStateFlow<MutableList<HistoricalData>>(mutableListOf())
     private val mSymbolCollection = MutableStateFlow<MutableList<String>>(emptyList<String>().toMutableList())
@@ -29,7 +29,6 @@ class AppViewModel : ViewModel() {
     fun makeSeleniumApiCall(symbol: String) = viewModelScope.launch {
         println("Making selenium api call. for symbol: $symbol")
         val data = ApiCallManager().makeLocalSeleniumApiCall(symbol)
-
 
         println("Selenium api call complete. Updating Data structures... with ${data.rows.size} ")
         println("Checking for current data: ${data.rows.size}")
@@ -45,14 +44,14 @@ class AppViewModel : ViewModel() {
 
     fun collectSnP500Flow() = viewModelScope.launch(Dispatchers.IO) {
         dataHandlerModel.SnP500ExtracterFlow().collect {
-            symbolsList.value = it
+            snp500Symbols.value = it
         }
-        println("Collected symbols: ${symbolsList.value.size}")
+        println("Collected symbols: ${snp500Symbols.value.size}")
     }
 
     fun collectHistoricalDataForSymbol() = viewModelScope.launch {
-        println("Collecting historical data for ${symbolsList.value.size} symbols")
-        symbolsList.value.forEach {
+        println("Collecting historical data for ${snp500Symbols.value.size} symbols")
+        snp500Symbols.value.forEach {
             println("Current Symbol: $it")
             mSymbolFlow.value = it
             mSymbolFlow.emit(it)
@@ -70,7 +69,7 @@ class AppViewModel : ViewModel() {
             list.toMutableList().add(data)
             mHistoricalDataFlow.value = list
             println("Data structures updated. Checking: (list) ${list.size} (data) ${mHistoricalDataFlow.value.size}")
-            mProgressFlow.emit((list.size / symbolsList.value.size).toFloat())
+            mProgressFlow.emit((list.size / snp500Symbols.value.size).toFloat())
         }
     }
 
@@ -80,11 +79,29 @@ class AppViewModel : ViewModel() {
         dataHandlerModel.historicalDataExtractorFlow(symbol)
     }
 
-    fun getSymbolFlow() = symbolFlow
+    /**
+     * This is used when doing the large parse. it is used for tracking which ticker we are currently parsing.
+     * */
+    fun getCurrentSymbolSearchFlow() = symbolFlow
+    /**
+     * This is used during the full parse, Which would indicate the percentage of completion of the parsing.
+     * */
     fun getProgressFlow() = progressFlow
-    fun getSymbolListFlow() = symbolsList.asStateFlow()
+
+    /**
+     * This is used for getting all of the Snp500 symbols (from wikipedia)
+     */
+    fun getSnP500SymbolsFlow() = snp500Symbols.asStateFlow()
+
+    /**
+     * This is the flow used to keep an updated list of the historical data, that has been parsed.
+     */
     fun getHistoricalDataFlow() = mHistoricalDataFlow.asStateFlow()
-    fun getSymbolCollectionFlow() = mSymbolCollection.asStateFlow()
+
+    /**
+     * This will keep a list of all of the symbols that have been searched for and parsed.
+     */
+    fun getSearchedSymbolListFlow() = mSymbolCollection.asStateFlow()
 }
 
 

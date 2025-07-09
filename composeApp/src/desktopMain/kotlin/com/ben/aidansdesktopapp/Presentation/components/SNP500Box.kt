@@ -1,24 +1,18 @@
-package com.ben.aidansdesktopapp.Presentation
+package com.ben.aidansdesktopapp.Presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
@@ -33,8 +27,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
@@ -42,6 +34,8 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ben.aidansdesktopapp.Model.AppViewModel
+import com.ben.aidansdesktopapp.Presentation.PopUp
+import com.ben.aidansdesktopapp.Presentation.ScrollableList
 import kotlinx.coroutines.launch
 
 @Composable
@@ -96,11 +90,11 @@ fun SNP500Box(modifier: Modifier = Modifier, dataSource: AppViewModel) {
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(
                     onDone = {
-                        if (dataSource.getSymbolListFlow().value.contains(text.uppercase())) {
+                        if (dataSource.getSnP500SymbolsFlow().value.contains(text.uppercase())) {
 
                             coroutineScope.launch {
                                 val index =
-                                    dataSource.getSymbolListFlow().value.indexOf(text.uppercase())
+                                    dataSource.getSnP500SymbolsFlow().value.indexOf(text.uppercase())
                                 listState.animateScrollToItem(index)
                             }
 
